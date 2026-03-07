@@ -825,3 +825,7 @@ class Activation_Softmax_Loss_CategoricalCrossentropy ():
         # Normalize gradient
         self.dinputs = self.dinputs / samples
 ```
+
+245-319; 
+# Optimisers
+    optimise with stochastic gradient descent
