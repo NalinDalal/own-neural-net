@@ -826,6 +826,101 @@ class Activation_Softmax_Loss_CategoricalCrossentropy ():
         self.dinputs = self.dinputs / samples
 ```
 
-245-319; 
 # Optimisers
-    optimise with stochastic gradient descent
+
+
+### Stochastic Gradient Descent (SGD)
+Stochastic Gradient Descent updates the model parameters using the gradient of the loss function with respect to the parameters. It uses a small batch of data (or a single data point) to compute the gradient, making it computationally efficient but noisy.
+
+**Function:**
+```python
+# SGD update rule
+w = w - learning_rate * gradient
+```
+
+### Learning Rate
+The learning rate controls the step size during the parameter update. A high learning rate may overshoot the optimal solution, while a low learning rate may result in slow convergence.
+
+### Learning Rate Decay
+Learning rate decay reduces the learning rate over time to ensure convergence. This helps the model settle into a minimum by taking smaller steps as training progresses.
+
+**Function:**
+```python
+# Learning rate decay
+learning_rate = initial_lr / (1 + decay_rate * epoch)
+```
+
+### Stochastic Gradient Descent with Momentum
+Momentum accelerates SGD by adding a fraction of the previous update to the current update. This helps navigate ravines and reduces oscillations.
+
+**Function:**
+```python
+# SGD with Momentum
+velocity = momentum * velocity - learning_rate * gradient
+w = w + velocity
+```
+
+### AdaGrad
+AdaGrad adapts the learning rate for each parameter based on the historical gradients. It performs well for sparse data but may lead to vanishing learning rates.
+
+**Function:**
+```python
+# AdaGrad update rule
+g = gradient
+cache += g**2
+w = w - (learning_rate / (sqrt(cache) + epsilon)) * g
+```
+
+### RMSProp
+RMSProp modifies AdaGrad by introducing a decay factor to the historical gradients, preventing the learning rate from vanishing.
+
+**Function:**
+```python
+# RMSProp update rule
+g = gradient
+cache = decay_rate * cache + (1 - decay_rate) * g**2
+w = w - (learning_rate / (sqrt(cache) + epsilon)) * g
+```
+
+### Adam (Adaptive Moment Estimation)
+Adam combines the benefits of Momentum and RMSProp. It maintains running averages of both the gradients and their squared values, making it robust and efficient.
+
+**Function:**
+```python
+# Adam update rule
+m = beta1 * m + (1 - beta1) * gradient
+v = beta2 * v + (1 - beta2) * gradient**2
+m_hat = m / (1 - beta1**t)
+v_hat = v / (1 - beta2**t)
+w = w - (learning_rate / (sqrt(v_hat) + epsilon)) * m_hat
+```
+
+# L1 Regularisation
+
+L1 regularization adds a penalty proportional to the absolute value of the weights to the loss function. This encourages sparsity in the model by driving some weights to zero.
+
+**Loss Function with L1 Regularization:**
+```python
+loss = original_loss + lambda_ * sum(abs(w))
+```
+
+## Backward Pass for L1 Regularization
+During the backward pass, the gradient of the L1 penalty is added to the gradient of the loss function. The gradient of the L1 term is the sign of the weights.
+
+**Backward Pass Implementation:**
+```python
+gradient += lambda_ * np.sign(w)
+```
+
+### Dropout
+
+Dropout is a regularization technique used to prevent overfitting in neural networks. During training, it randomly sets a fraction of the neurons' outputs to zero, effectively removing them from the network for that iteration. This forces the network to learn more robust features.
+
+**Implementation:**
+```python
+# Dropout during training
+mask = (np.random.rand(*layer_output.shape) > dropout_rate)
+layer_output *= mask
+layer_output /= (1 - dropout_rate)  # Scale to maintain expected value
+```
+
